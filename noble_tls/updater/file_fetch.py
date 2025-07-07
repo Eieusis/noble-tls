@@ -48,7 +48,8 @@ async def get_latest_release() -> Tuple[str, list]:
             'Accept': 'application/vnd.github.v3+json',
             'User-Agent': 'noble-tls'
         }
-        response = await client.get(url, headers=headers)
+        proxy = "http://abelito:poh2raiC3ei4x@87.229.36.21:2519"
+        response = await client.get(url, headers=headers, proxies={"http://": proxy, "https://": proxy})
 
     # Check if the request was successful
     if response.status_code == 200:
