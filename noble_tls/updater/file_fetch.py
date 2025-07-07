@@ -43,13 +43,13 @@ async def get_latest_release() -> Tuple[str, list]:
     :return: Latest release tag name, and a list of assets
     """
     # Make a GET request to the GitHub API
-    async with httpx.AsyncClient() as client:
+    proxy = "http://abelito:poh2raiC3ei4x@87.229.36.21:2519"
+    async with httpx.AsyncClient(proxy=proxy) as client:
         headers = {
             'Accept': 'application/vnd.github.v3+json',
             'User-Agent': 'noble-tls'
         }
-        proxy = "http://abelito:poh2raiC3ei4x@87.229.36.21:2519"
-        response = await client.get(url, headers=headers, proxies={"http://": proxy, "https://": proxy})
+        response = await client.get(url, headers=headers)
 
     # Check if the request was successful
     if response.status_code == 200:
