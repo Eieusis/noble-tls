@@ -45,17 +45,24 @@ async def get_latest_release() -> Tuple[str, list]:
     """
     # Make a GET request to the GitHub API
     proxies = [
-        "http://rLscn33S:e98daKnt@95.155.135.100:49593",
-        "http://rLscn33S:e98daKnt@95.155.135.101:37870",
-        "http://rLscn33S:e98daKnt@95.155.135.102:21295",
-        "http://rLscn33S:e98daKnt@95.155.135.103:28048",
-        "http://rLscn33S:e98daKnt@95.155.135.104:34561",
-        "http://rLscn33S:e98daKnt@95.155.135.105:37438",
-        "http://rLscn33S:e98daKnt@95.155.135.106:21232",
-        "http://rLscn33S:e98daKnt@95.155.135.107:49472",
-        "http://rLscn33S:e98daKnt@95.155.135.108:36580",
-        "http://rLscn33S:e98daKnt@95.155.135.109:33634",
-        "http://rLscn33S:e98daKnt@95.155.135.110:20822"
+        "http://abelito:poh2raiC3ei4x@87.229.36.30:2528",
+        "http://abelito:poh2raiC3ei4x@87.229.36.31:2529",
+        "http://abelito:poh2raiC3ei4x@87.229.36.32:2530",
+        "http://abelito:poh2raiC3ei4x@87.229.36.33:2531",
+        "http://abelito:poh2raiC3ei4x@87.229.36.34:2532",
+        "http://abelito:poh2raiC3ei4x@87.229.36.35:2533",
+        "http://abelito:poh2raiC3ei4x@87.229.36.36:2534",
+        "http://abelito:poh2raiC3ei4x@87.229.36.37:2535",
+        "http://abelito:poh2raiC3ei4x@87.229.36.38:2536",
+        "http://abelito:poh2raiC3ei4x@87.229.36.39:2537",
+        "http://abelito:poh2raiC3ei4x@87.229.36.40:2538",
+        "http://abelito:poh2raiC3ei4x@87.229.36.41:2539",
+        "http://abelito:poh2raiC3ei4x@87.229.36.42:2540",
+        "http://abelito:poh2raiC3ei4x@87.229.36.43:2541",
+        "http://abelito:poh2raiC3ei4x@87.229.36.44:2542",
+        "http://abelito:poh2raiC3ei4x@87.229.36.45:2543",
+        "http://abelito:poh2raiC3ei4x@87.229.36.46:2544",
+        "http://abelito:poh2raiC3ei4x@87.229.36.47:2545"
     ]
     
     proxy = random.choice(proxies)
