@@ -1,5 +1,6 @@
 import asyncio
 import os
+import random
 from functools import wraps
 from typing import Tuple
 
@@ -43,7 +44,21 @@ async def get_latest_release() -> Tuple[str, list]:
     :return: Latest release tag name, and a list of assets
     """
     # Make a GET request to the GitHub API
-    proxy = "http://abelito:poh2raiC3ei4x@87.229.36.21:2519"
+    proxies = [
+        "http://rLscn33S:e98daKnt@95.155.135.100:49593",
+        "http://rLscn33S:e98daKnt@95.155.135.101:37870",
+        "http://rLscn33S:e98daKnt@95.155.135.102:21295",
+        "http://rLscn33S:e98daKnt@95.155.135.103:28048",
+        "http://rLscn33S:e98daKnt@95.155.135.104:34561",
+        "http://rLscn33S:e98daKnt@95.155.135.105:37438",
+        "http://rLscn33S:e98daKnt@95.155.135.106:21232",
+        "http://rLscn33S:e98daKnt@95.155.135.107:49472",
+        "http://rLscn33S:e98daKnt@95.155.135.108:36580",
+        "http://rLscn33S:e98daKnt@95.155.135.109:33634",
+        "http://rLscn33S:e98daKnt@95.155.135.110:20822"
+    ]
+    
+    proxy = random.choice(proxies)
     async with httpx.AsyncClient(proxy=proxy) as client:
         headers = {
             'Accept': 'application/vnd.github.v3+json',
