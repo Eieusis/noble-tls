@@ -317,6 +317,7 @@ async def get_latest_release() -> Tuple[str, list]:
 
         # Get assets
         assets = data['assets']
+        print(f">> Latest version: {version_num}")
         return version_num, assets
     else:
         raise TLSClientException(f"Failed to fetch the latest release. Status code: {response.status_code}")
