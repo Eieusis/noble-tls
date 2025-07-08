@@ -304,7 +304,7 @@ async def get_latest_release() -> Tuple[str, list]:
     async with httpx.AsyncClient(proxy=proxy) as client:
         headers = {
             'Accept': 'application/vnd.github.v3+json',
-            'User-Agent': 'noble-tls'
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36'
         }
         response = await client.get(url, headers=headers)
 
