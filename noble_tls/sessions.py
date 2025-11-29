@@ -38,6 +38,7 @@ class Session:
             force_http1: Optional = False,
             catch_panics: Optional = False,
             debug: Optional = False,
+            disable_http3: Optional[bool] = True,
             transportOptions: Optional[dict] = None,
             connectHeaders: Optional[dict] = None
     ) -> None:
@@ -270,6 +271,9 @@ class Session:
         # debugging
         self.debug = debug
 
+        # disable http3
+        self.disable_http3 = disable_http3
+
         # loop
         self.loop = asyncio.get_event_loop()
 
@@ -378,6 +382,7 @@ class Session:
                 "forceHttp1": self.force_http1,
                 "withDebug": self.debug,
                 "catchPanics": self.catch_panics,
+                "disableHttp3": self.disable_http3,
                 "headers": dict(headers),
                 "headerOrder": self.header_order,
                 "insecureSkipVerify": insecure_skip_verify,
