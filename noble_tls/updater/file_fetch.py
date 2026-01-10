@@ -12,7 +12,7 @@ import httpx
 # ------
 
 
-version_to_use = '225354119'
+version_to_use = '272820214'
 
 # ------
 
@@ -20,7 +20,7 @@ version_to_use = '225354119'
 owner = 'bogdanfinn'
 repo = 'tls-client'
 url = f'https://api.github.com/repos/{owner}/{repo}/releases/{version_to_use}'
-url = f'https://api.github.com/repos/{owner}/{repo}/releases/latest'
+# url = f'https://api.github.com/repos/{owner}/{repo}/releases/latest'
 
 root_directory = root_dir()
 GITHUB_TOKEN = os.getenv("GH_TOKEN")
