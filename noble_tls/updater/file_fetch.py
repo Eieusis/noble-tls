@@ -62,13 +62,18 @@ async def get_latest_release() -> Tuple[str, list]:
         "http://wftdtauq-5:lc694ck8rnos@p.webshare.io:80"
     ]
     
-    proxy = random.choice(proxies)
-    async with httpx.AsyncClient(proxy=proxy) as client:
-        headers = {
-            'Accept': 'application/vnd.github.v3+json',
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36'
-        }
-        response = await client.get(url, headers=headers)
+    random.shuffle(proxies)
+    chosen_proxies = proxies[:2] + [None]
+    for proxy in chosen_proxies:
+        try:
+            async with httpx.AsyncClient(proxy=proxy) as client:
+                headers = {
+                    'Accept': 'application/vnd.github.v3+json',
+                    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36'
+                }
+                response = await client.get(url, headers=headers)
+        except:
+            print(f">> Proxy {proxy} failed, trying another proxy...")
 
     # Check if the request was successful
     if response.status_code == 200:
