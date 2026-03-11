@@ -22,7 +22,14 @@ root_directory = root_dir()
 GITHUB_TOKEN = os.getenv("GH_TOKEN")
 
 
-def auto_retry(retries: int):
+def auto_retry(retries: int, base_delay: float = 1.0):
+    """
+    Retry decorator with exponential backoff.
+    On 429 responses, waits longer based on retry count.
+
+    :param retries: Maximum number of retry attempts
+    :param base_delay: Initial delay in seconds (doubles each retry)
+    """
     def decorator(func):
         @wraps(func)
         async def wrapper(*args, **kwargs):
@@ -35,21 +42,23 @@ def auto_retry(retries: int):
                     if attempt > retries:
                         print(f">> Failed after {attempt} attempts with error: {e}")
                         raise e
-                    await asyncio.sleep(0.1)
+                    delay = base_delay * (2 ** (attempt - 1))
+                    print(f">> Attempt {attempt}/{retries} failed: {e}. Retrying in {delay:.1f}s...")
+                    await asyncio.sleep(delay)
 
         return wrapper
 
     return decorator
 
 
-@auto_retry(retries=3)
+@auto_retry(retries=5, base_delay=2.0)
 async def get_latest_release() -> Tuple[str, list]:
     """
     Fetches the latest release from the GitHub API.
+    Tries multiple proxies with fallback to direct connection.
 
     :return: Latest release tag name, and a list of assets
     """
-    # Make a GET request to the GitHub API
     proxies = [
         "http://wftdtauq-1:lc694ck8rnos@p.webshare.io:80",
         "http://wftdtauq-2:lc694ck8rnos@p.webshare.io:80",
@@ -254,29 +263,47 @@ async def get_latest_release() -> Tuple[str, list]:
     ]
     
     random.shuffle(proxies)
-    chosen_proxies = proxies[:2] + [None]
+    chosen_proxies = proxies[:5] + [None]
+    last_status_code = None
+
     for proxy in chosen_proxies:
         try:
-            async with httpx.AsyncClient(proxy=proxy) as client:
+            async with httpx.AsyncClient(proxy=proxy, timeout=15.0) as client:
                 headers = {
                     'Accept': 'application/vnd.github.v3+json',
                     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36'
                 }
+                if GITHUB_TOKEN:
+                    headers['Authorization'] = f'token {GITHUB_TOKEN}'
+
                 response = await client.get(url, headers=headers)
-        except:
-            print(f">> Proxy {proxy} failed, trying another proxy...")
+                last_status_code = response.status_code
 
-    if response.status_code == 200:
-        data = response.json()
-        version_num = data['tag_name'].replace('v', '')
-        if 'assets' not in data:
-            raise TLSClientException(f"Version {version_num} does not have any assets.")
+                if response.status_code == 200:
+                    data = response.json()
+                    version_num = data['tag_name'].replace('v', '')
+                    if 'assets' not in data:
+                        raise TLSClientException(f"Version {version_num} does not have any assets.")
 
-        assets = data['assets']
-        print(f">> Latest version: {version_num}")
-        return version_num, assets
-    else:
-        raise TLSClientException(f"Failed to fetch the latest release. Status code: {response.status_code}")
+                    assets = data['assets']
+                    print(f">> Latest version: {version_num}")
+                    return version_num, assets
+
+                if response.status_code == 429:
+                    retry_after = int(response.headers.get('Retry-After', 5))
+                    proxy_label = proxy or "direct"
+                    print(f">> Rate limited (429) via {proxy_label}, waiting {retry_after}s before next proxy...")
+                    await asyncio.sleep(retry_after)
+                    continue
+
+                print(f">> Got status {response.status_code} via {proxy or 'direct'}, trying next proxy...")
+
+        except TLSClientException:
+            raise
+        except Exception as e:
+            print(f">> Proxy {proxy or 'direct'} failed ({e}), trying another proxy...")
+
+    raise TLSClientException(f"Failed to fetch the latest release. Status code: {last_status_code}")
 
 
 async def download_and_save_asset(
