@@ -16,6 +16,7 @@ from .__version__ import __version__
 from .response import build_response
 from .utils.session_utils import random_session_id
 from .utils.identifiers import Client
+from .profiles import CUSTOM_PROFILES
 
 
 class Session:
@@ -127,6 +128,47 @@ class Session:
         self.stream_id = stream_id
 
         self.default_headers = default_headers
+
+        self._apply_custom_profile()
+
+    def _apply_custom_profile(self):
+        """Override the Go library's built-in profile with a Python-side custom
+        profile when one exists for the selected client identifier.
+
+        This bypasses buggy fingerprint behavior in the compiled Go binary
+        (e.g. the spurious 0xCA34 ECH GREASE extension in chrome_146).
+        User-provided __init__ kwargs take precedence over profile defaults.
+        """
+        if self.client_identifier is None:
+            return
+        profile = CUSTOM_PROFILES.get(self.client_identifier)
+        if profile is None:
+            return
+
+        self.client_identifier = None
+
+        if self.ja3_string is None:
+            self.ja3_string = profile.get("ja3_string")
+        if self.h2_settings is None:
+            self.h2_settings = profile.get("h2_settings")
+        if self.h2_settings_order is None:
+            self.h2_settings_order = profile.get("h2_settings_order")
+        if self.supported_signature_algorithms is None:
+            self.supported_signature_algorithms = profile.get("supported_signature_algorithms")
+        if self.supported_versions is None:
+            self.supported_versions = profile.get("supported_versions")
+        if self.key_share_curves is None:
+            self.key_share_curves = profile.get("key_share_curves")
+        if self.cert_compression_algo is None:
+            self.cert_compression_algo = profile.get("cert_compression_algo")
+        if self.alps_protocols is None:
+            self.alps_protocols = profile.get("alps_protocols")
+        if self.pseudo_header_order is None:
+            self.pseudo_header_order = profile.get("pseudo_header_order")
+        if self.connection_flow is None:
+            self.connection_flow = profile.get("connection_flow")
+        if self.random_tls_extension_order is False:
+            self.random_tls_extension_order = True
 
     @property
     def timeout(self):
@@ -350,6 +392,7 @@ class Session:
                     custom_tls["h3SendGreaseFrames"] = self.h3_send_grease_frames
 
                 request_payload["customTlsClient"] = custom_tls
+                request_payload["withRandomTLSExtensionOrder"] = self.random_tls_extension_order
             else:
                 request_payload["tlsClientIdentifier"] = self.client_identifier
                 request_payload["withRandomTLSExtensionOrder"] = self.random_tls_extension_order
