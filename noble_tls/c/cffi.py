@@ -1,79 +1,40 @@
-import asyncio
-import os
+"""
+ctypes wrapper around the bundled TLS shared library.
+
+The binary must already exist in noble_tls/dependencies/ -- see
+``noble_tls.updater.file_fetch.ensure_binary_exists`` for the expected
+naming convention.
+"""
+
 import ctypes
+import os
 
 from noble_tls.exceptions.exceptions import TLSClientException
-from noble_tls.updater.file_fetch import read_version_info, download_if_necessary
-from noble_tls.utils.asset import generate_asset_name, root_dir
-
-
-async def check_and_download_dependencies():
-    """
-    Check if the dependencies folder is empty and download necessary files if it is.
-    """
-    root_directory = root_dir()
-    contains_anything = [file for file in os.listdir(f'{root_directory}/dependencies') if not file.startswith('.')]
-    if len(contains_anything) == 0:
-        print(">> Dependencies folder is empty. Downloading the latest TLS release...")
-        await download_if_necessary()
-
-
-def run_async_task(task):
-    """
-    Run an asynchronous task taking into account the current event loop.
-    :param task: Coroutine to run.
-    """
-    try:
-        loop = asyncio.get_running_loop()
-    except RuntimeError:
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        loop.run_until_complete(task)
-    else:
-        if loop.is_running():
-            asyncio.ensure_future(task)
-        else:
-            loop.run_until_complete(task)
-
-
-def load_asset():
-    """
-    Load the asset and return its name, download if necessary.
-    :return: Name of the asset.
-    """
-    # Check if dependencies folder exists
-    if not os.path.exists(f'{root_dir()}/dependencies'):
-        os.mkdir(f'{root_dir()}/dependencies')
-
-    current_asset, current_version = read_version_info()
-    if not current_asset or not current_version:
-        run_async_task(check_and_download_dependencies())
-        current_asset, current_version = read_version_info()
-        print(f">> Downloaded asset {current_asset} for version {current_version}.")
-
-    asset_name = generate_asset_name(version=current_version)
-    asset_path = f'{root_dir()}/dependencies/{asset_name}'
-    if not os.path.exists(asset_path):
-        raise TLSClientException(f"Unable to find asset {asset_name} for version {current_version}.")
-
-    return asset_name
+from noble_tls.updater.file_fetch import ensure_binary_exists
+from noble_tls.utils.asset import root_dir
 
 
 def initialize_library():
     """
-    Initialize and return the library.
-    :return: Loaded library object.
+    Load the bundled TLS shared library via ctypes.
+
+    :return: Loaded ctypes library object.
+    :raises TLSClientException: If the binary is missing or fails to load.
     """
     try:
-        asset_name = load_asset()
-        library = ctypes.cdll.LoadLibrary(f"{root_dir()}/dependencies/{asset_name}")
+        asset_name = ensure_binary_exists()
+        library_path = os.path.join(root_dir(), "dependencies", asset_name)
+        library = ctypes.cdll.LoadLibrary(library_path)
         return library
-    except TLSClientException as e:
-        raise TLSClientException(f"Failed to load TLS Client asset: {e}")
+    except TLSClientException:
+        raise
     except OSError as e:
-        msg = f"Failed to load the library: {e}"
+        msg = f"Failed to load the TLS library: {e}"
         if os.name == "darwin":
-            msg += " — If you're on macOS, allow the library in System Preferences > Security & Privacy > General."
+            msg += (
+                " — If you're on macOS, allow the library in "
+                "System Preferences > Privacy & Security > General."
+            )
         raise TLSClientException(msg)
 
 
@@ -81,6 +42,7 @@ _library = None
 
 
 def _get_library():
+    """Return the cached library singleton, initialising on first call."""
     global _library
     if _library is None:
         _library = initialize_library()
@@ -107,24 +69,30 @@ def _get_library():
 
 
 def request(payload: bytes) -> ctypes.c_char_p:
+    """Send a TLS request payload and return the raw response pointer."""
     return _get_library().request(payload)
 
 
 def free_memory(response_id: bytes) -> ctypes.c_char_p:
+    """Free memory associated with a previous response."""
     return _get_library().freeMemory(response_id)
 
 
 def get_cookies_from_session(payload: bytes) -> ctypes.c_char_p:
+    """Retrieve cookies for a session."""
     return _get_library().getCookiesFromSession(payload)
 
 
 def add_cookies_to_session(payload: bytes) -> ctypes.c_char_p:
+    """Add cookies to a session."""
     return _get_library().addCookiesToSession(payload)
 
 
 def destroy_session(payload: bytes) -> ctypes.c_char_p:
+    """Destroy a single TLS session."""
     return _get_library().destroySession(payload)
 
 
 def destroy_all() -> ctypes.c_char_p:
+    """Destroy all active TLS sessions."""
     return _get_library().destroyAll()

@@ -4,8 +4,6 @@ from noble_tls import Client, Protocol
 
 
 async def main():
-    await noble_tls.update_if_necessary()
-
     session = noble_tls.Session(
         client=Client.CHROME_133,
         random_tls_extension_order=True,

@@ -3,8 +3,6 @@ import noble_tls
 
 
 async def main():
-    await noble_tls.update_if_necessary()
-
     # Custom TLS with HTTP/3 settings and protocol racing
     # Go binary races H2 vs H3 with a 300ms Chrome-like delay, picks the winner
     session = noble_tls.Session(

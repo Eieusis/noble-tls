@@ -4,8 +4,6 @@ from noble_tls import Client
 
 
 async def main():
-    await noble_tls.update_if_necessary()
-
     # IPv4-only with local address binding (host:port, use port 0 for auto)
     session = noble_tls.Session(
         client=Client.CHROME_133_PSK,

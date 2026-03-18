@@ -20,7 +20,11 @@ setup(
     long_description=readme,
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=["tests"]),
-    install_requires=["httpx", "distro", "requests"],
+    package_data={
+        "noble_tls": ["dependencies/*.dylib", "dependencies/*.so", "dependencies/*.dll"],
+    },
+    include_package_data=True,
+    install_requires=["distro", "requests"],
     classifiers=[
         "Environment :: Web Environment",
         "Intended Audience :: Developers",

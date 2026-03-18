@@ -1,6 +1,7 @@
 # Proxies
 proxies.txt
-/noble_tls/dependencies
+# Allow binaries in dependencies/ to be committed
+# /noble_tls/dependencies
 # IntelliJ project files
 .idea
 *.iml
@@ -14,6 +15,10 @@ __pycache__/
 
 # C extensions
 *.so
+# But allow shared libraries in dependencies/
+!noble_tls/dependencies/*.so
+!noble_tls/dependencies/*.dylib
+!noble_tls/dependencies/*.dll
 
 # Distribution / packaging
 .Python
