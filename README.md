@@ -189,15 +189,15 @@ The syntax follows [requests](https://github.com/psf/requests) closely. Most thi
 Example 1 -- Preset browser profile:
 
 <details>
-<summary>Available client identifiers (76 profiles)</summary>
+<summary>Available client identifiers (81 profiles)</summary>
 
-| Chrome | Safari | Firefox | Opera |
-|--------|--------|---------|-------|
+| Chrome | Safari | Firefox | Opera / Brave |
+|--------|--------|---------|---------------|
 | `CHROME_103` | `SAFARI_15_6_1` | `FIREFOX_102` | `OPERA_89` |
 | `CHROME_104` | `SAFARI_16_0` | `FIREFOX_104` | `OPERA_90` |
 | `CHROME_105` | `SAFARI_IPAD_15_6` | `FIREFOX_105` | `OPERA_91` |
-| `CHROME_106` | `SAFARI_IOS_15_5` | `FIREFOX_106` | |
-| `CHROME_107` | `SAFARI_IOS_15_6` | `FIREFOX_108` | |
+| `CHROME_106` | `SAFARI_IOS_15_5` | `FIREFOX_106` | `BRAVE_146` |
+| `CHROME_107` | `SAFARI_IOS_15_6` | `FIREFOX_108` | `BRAVE_146_PSK` |
 | `CHROME_108` | `SAFARI_IOS_16_0` | `FIREFOX_110` | |
 | `CHROME_109` | `SAFARI_IOS_17_0` | `FIREFOX_117` | |
 | `CHROME_110` | `SAFARI_IOS_18_0` | `FIREFOX_120` | |
@@ -208,7 +208,7 @@ Example 1 -- Preset browser profile:
 | `CHROME_117` | | `FIREFOX_146_PSK` | |
 | `CHROME_120` | | `FIREFOX_147` | |
 | `CHROME_124` | | `FIREFOX_147_PSK` | |
-| `CHROME_130_PSK` | | | |
+| `CHROME_130_PSK` | | `FIREFOX_148` | |
 | `CHROME_131` | | | |
 | `CHROME_131_PSK` | | | |
 | `CHROME_133` | | | |
@@ -217,6 +217,8 @@ Example 1 -- Preset browser profile:
 | `CHROME_144_PSK` | | | |
 | `CHROME_146` | | | |
 | `CHROME_146_PSK` | | | |
+| `CHROME_150` | | | |
+| `CHROME_150_PSK` | | | |
 
 | Mobile / App |
 |-------------|
