@@ -29,6 +29,8 @@ class Client(Enum):
     CHROME_146_PSK = "chrome_146_PSK"
     CHROME_150 = "chrome_150"
     CHROME_150_PSK = "chrome_150_PSK"
+    CHROME_152 = "chrome_152"
+    CHROME_152_PSK = "chrome_152_PSK"
     # --- Brave ---
     BRAVE_146 = "brave_146"
     BRAVE_146_PSK = "brave_146_PSK"
