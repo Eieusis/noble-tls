@@ -189,7 +189,7 @@ The syntax follows [requests](https://github.com/psf/requests) closely. Most thi
 Example 1 -- Preset browser profile:
 
 <details>
-<summary>Available client identifiers (83 profiles)</summary>
+<summary>Available client identifiers (84 profiles)</summary>
 
 | Chrome | Safari | Firefox | Opera / Brave |
 |--------|--------|---------|---------------|
@@ -220,6 +220,7 @@ Example 1 -- Preset browser profile:
 | `CHROME_150` | | | |
 | `CHROME_150_PSK` | | | |
 | `CHROME_152` | | | |
+| `CHROME_152_1` | | | |
 | `CHROME_152_PSK` | | | |
 
 | Mobile / App |
