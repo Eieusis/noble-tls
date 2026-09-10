@@ -30,7 +30,6 @@ class Client(Enum):
     CHROME_150 = "chrome_150"
     CHROME_150_PSK = "chrome_150_PSK"
     CHROME_152 = "chrome_152"
-    CHROME_152_1 = "chrome_152_1"
     CHROME_152_PSK = "chrome_152_PSK"
     # --- Brave ---
     BRAVE_146 = "brave_146"

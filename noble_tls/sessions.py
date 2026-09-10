@@ -23,6 +23,7 @@ class Session:
             self,
             client: Optional[Client] = None,
             ja3_string: Optional[str] = None,
+            trust_anchors_payload: Optional[str] = None,
             h2_settings: Optional[dict] = None,
             h2_settings_order: Optional[list] = None,
             supported_signature_algorithms: Optional[list] = None,
@@ -43,6 +44,7 @@ class Session:
             transportOptions: Optional[dict] = None,
             connectHeaders: Optional[dict] = None,
             disable_http3: bool = False,
+            disable_session_tickets: bool = False,
             protocol_racing: bool = False,
             h3_settings: Optional[dict] = None,
             h3_settings_order: Optional[list] = None,
@@ -82,6 +84,9 @@ class Session:
         self.timeout_seconds = 30
 
         self.ja3_string = ja3_string
+        # Hex payload for the trust_anchors extension (51764). Required when
+        # ja3_string lists that extension, otherwise the Go layer rejects it.
+        self.trust_anchors_payload = trust_anchors_payload
         self.h2_settings = h2_settings
         self.h2_settings_order = h2_settings_order
         self.supported_signature_algorithms = supported_signature_algorithms
@@ -103,6 +108,7 @@ class Session:
         self.debug = debug
 
         self.disable_http3 = disable_http3
+        self.disable_session_tickets = disable_session_tickets
         self.protocol_racing = protocol_racing
         self.h3_settings = h3_settings
         self.h3_settings_order = h3_settings_order
@@ -283,6 +289,7 @@ class Session:
                 "isRotatingProxy": self.is_rotating_proxy,
                 "withoutCookieJar": self.without_cookie_jar,
                 "disableHttp3": self.disable_http3,
+                "disableSessionTickets": self.disable_session_tickets,
                 "withProtocolRacing": self.protocol_racing,
             }
 
@@ -325,6 +332,8 @@ class Session:
                     "keyShareCurves": self.key_share_curves,
                 }
 
+                if self.trust_anchors_payload is not None:
+                    custom_tls["trustAnchorsPayload"] = self.trust_anchors_payload
                 if self.alps_protocols is not None:
                     custom_tls["alpsProtocols"] = self.alps_protocols
                 if self.ech_candidate_payloads is not None:

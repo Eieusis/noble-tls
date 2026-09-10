@@ -28,6 +28,7 @@ pip install noble-tls
 - [x] HTTP/3 (QUIC) with protocol racing
 - [x] Certificate pinning (HPKP)
 - [x] ECH (Encrypted Client Hello) and ALPS
+- [x] Trust anchors extension payload and session ticket control
 - [x] Session lifecycle management (close, get/add cookies from Go layer)
 - [x] Response streaming to file
 - [x] Protocol detection (`response.used_protocol`)
@@ -40,6 +41,27 @@ pip install noble-tls
 ---
 
 ## What's new
+
+### tls-client v1.16.0
+
+The bundled binaries track [tls-client v1.16.0](https://github.com/bogdanfinn/tls-client/releases/tag/v1.16.0), which brings HTTP/3 over SOCKS5, ML-DSA signature verification, and a batch of HTTP/2 header and decompression fixes. Two options are exposed:
+
+```python
+session = noble_tls.Session(
+    client=Client.CHROME_152,
+    disable_session_tickets=True,   # no TLS session ticket caching or resumption
+)
+
+session = noble_tls.Session(
+    ja3_string="...",               # when the JA3 lists extension 51764
+    trust_anchors_payload="0100...",
+)
+```
+
+Two things changed upstream that can bite you:
+
+- Protocol racing over a non-SOCKS5 proxy is now a hard config error. Only SOCKS5 tunnels UDP, so previously the HTTP/3 leg went out directly and leaked your real IP. Use a `socks5://` proxy, or set `disable_http3=True` / `protocol_racing=False`.
+- The Go-side default profile moved from Chrome 146 to Chrome 150. This only matters if you construct a session without `client` or `ja3_string`.
 
 ### Session lifecycle
 
@@ -189,7 +211,7 @@ The syntax follows [requests](https://github.com/psf/requests) closely. Most thi
 Example 1 -- Preset browser profile:
 
 <details>
-<summary>Available client identifiers (84 profiles)</summary>
+<summary>Available client identifiers (83 profiles)</summary>
 
 | Chrome | Safari | Firefox | Opera / Brave |
 |--------|--------|---------|---------------|
@@ -220,7 +242,6 @@ Example 1 -- Preset browser profile:
 | `CHROME_150` | | | |
 | `CHROME_150_PSK` | | | |
 | `CHROME_152` | | | |
-| `CHROME_152_1` | | | |
 | `CHROME_152_PSK` | | | |
 
 | Mobile / App |
