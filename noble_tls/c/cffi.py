@@ -8,6 +8,7 @@ naming convention.
 
 import ctypes
 import os
+import threading
 
 from noble_tls.exceptions.exceptions import TLSClientException
 from noble_tls.updater.file_fetch import ensure_binary_exists
@@ -39,31 +40,35 @@ def initialize_library():
 
 
 _library = None
+_library_lock = threading.Lock()
 
 
 def _get_library():
     """Return the cached library singleton, initialising on first call."""
     global _library
     if _library is None:
-        _library = initialize_library()
+        with _library_lock:
+            if _library is None:
+                library = initialize_library()
 
-        _library.request.argtypes = [ctypes.c_char_p]
-        _library.request.restype = ctypes.c_char_p
+                library.request.argtypes = [ctypes.c_char_p]
+                library.request.restype = ctypes.c_char_p
 
-        _library.freeMemory.argtypes = [ctypes.c_char_p]
-        _library.freeMemory.restype = None
+                library.freeMemory.argtypes = [ctypes.c_char_p]
+                library.freeMemory.restype = None
 
-        _library.getCookiesFromSession.argtypes = [ctypes.c_char_p]
-        _library.getCookiesFromSession.restype = ctypes.c_char_p
+                library.getCookiesFromSession.argtypes = [ctypes.c_char_p]
+                library.getCookiesFromSession.restype = ctypes.c_char_p
 
-        _library.addCookiesToSession.argtypes = [ctypes.c_char_p]
-        _library.addCookiesToSession.restype = ctypes.c_char_p
+                library.addCookiesToSession.argtypes = [ctypes.c_char_p]
+                library.addCookiesToSession.restype = ctypes.c_char_p
 
-        _library.destroySession.argtypes = [ctypes.c_char_p]
-        _library.destroySession.restype = ctypes.c_char_p
+                library.destroySession.argtypes = [ctypes.c_char_p]
+                library.destroySession.restype = ctypes.c_char_p
 
-        _library.destroyAll.argtypes = []
-        _library.destroyAll.restype = ctypes.c_char_p
+                library.destroyAll.argtypes = []
+                library.destroyAll.restype = ctypes.c_char_p
+                _library = library
 
     return _library
 
