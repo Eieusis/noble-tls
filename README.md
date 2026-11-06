@@ -3,7 +3,7 @@
 [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-310/)
 
 Noble TLS is an advanced HTTP library based on requests and tls-client.
-Fully async, with auto-updating JA3 fingerprints.
+Async Python interface with bundled browser TLS profiles.
 
 # Installation
 ```
@@ -41,6 +41,21 @@ pip install noble-tls
 ---
 
 ## What's new
+
+### Native refresh — 2026-11-06
+
+Linux amd64 and macOS arm64 binaries now use upstream commit
+[`9e4b45e`](https://github.com/bogdanfinn/tls-client/commit/9e4b45ec70e1293e8c88a80fa02a25a10ab1efd8),
+built with Go 1.27.3. This includes generated Chrome Root Store trust anchors,
+bounded proxy/HTTP2 connection attempts, response-header timeouts, and full
+transport cleanup. The root store was refreshed to version 43 (component 1825,
+28 anchors). Source revisions, build evidence and binary hashes are recorded in
+[`NATIVE_BUILD.json`](NATIVE_BUILD.json).
+
+`CHROME_152` and `CHROME_152_PSK` remain the newest upstream Chrome selectors.
+They retain upstream shuffled trust-anchor ordering; this is not a Chrome 157
+profile. No unmerged HTTP/2 GREASE changes are included. Existing Python request
+and cookie handling are unchanged. Binaries are bundled, not auto-downloaded.
 
 ### tls-client v1.16.0
 

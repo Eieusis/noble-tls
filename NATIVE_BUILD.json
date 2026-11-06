@@ -1,0 +1,22 @@
+{
+  "native_repository": "https://github.com/yeet-robotics/tls-client-fixed",
+  "native_commit": "286ffb10f331c8473f5abd0a7ea81859dc03142b",
+  "upstream_commit": "9e4b45ec70e1293e8c88a80fa02a25a10ab1efd8",
+  "go_version": "1.27.3",
+  "chrome_root_store_version": 43,
+  "chrome_root_store_component": 1825,
+  "chrome_root_store_anchors": 28,
+  "build_run": "https://github.com/yeet-robotics/tls-client-fixed/actions/runs/42206752082",
+  "artifacts": {
+    "tls-client-darwin-arm64.dylib": {
+      "sha256": "c7f20cefc88e45a1db5457a77a42e750c551dc33dfd79b00a715350c689be539",
+      "bytes": 12685554,
+      "archive_digest": "sha256:3dc38a7e5a509b157d0dda8ab1bde8d1f3c45a9eb5dcfcba565c600e7b53593b"
+    },
+    "tls-client-linux-ubuntu-amd64.so": {
+      "sha256": "c5d4c3f59764ef1b7513129b0bf5819891a504173e6a99ac26db2b862a5ef295",
+      "bytes": 18709992,
+      "archive_digest": "sha256:7cf9c3263acb7a2b6056d70a6dd4d621a1e38d5c03f2ef45ab9f8a975157f239"
+    }
+  }
+}

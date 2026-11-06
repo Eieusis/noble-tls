@@ -18,7 +18,7 @@ def test_library_bindings_registered(mocker):
     mocker.patch('ctypes.cdll.LoadLibrary', return_value=mock_lib)
 
     import noble_tls.c.cffi as cffi_mod
-    cffi_mod._library = None  # force re-init
+    mocker.patch.object(cffi_mod, '_library', None)  # force re-init, restore after the test
     lib = cffi_mod._get_library()
 
     for fn_name in ['request', 'freeMemory', 'getCookiesFromSession',
