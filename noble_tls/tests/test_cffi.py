@@ -24,3 +24,4 @@ def test_library_bindings_registered(mocker):
     for fn_name in ['request', 'freeMemory', 'getCookiesFromSession',
                      'addCookiesToSession', 'destroySession', 'destroyAll']:
         assert hasattr(lib, fn_name), f"Library missing {fn_name}"
+    assert lib.freeMemory.restype is None

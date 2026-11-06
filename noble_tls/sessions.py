@@ -18,6 +18,14 @@ from .utils.session_utils import random_session_id
 from .utils.identifiers import Client
 
 
+def _call_native(function, *args):
+    # Keep allocation and release in one worker, including after awaiter cancellation.
+    response = function(*args)
+    response_object = loads(ctypes.string_at(response).decode('utf-8'))
+    free_memory(response_object['id'].encode('utf-8'))
+    return response_object
+
+
 class Session:
     def __init__(
             self,
@@ -146,30 +154,21 @@ class Session:
         """Destroy this session in the Go library, freeing connections and memory."""
         payload = dumps({"sessionId": self._session_id}).encode('utf-8')
         loop = asyncio.get_event_loop()
-        response = await loop.run_in_executor(None, destroy_session, payload)
-        response_bytes = ctypes.string_at(response)
-        response_object = loads(response_bytes.decode('utf-8'))
-        await loop.run_in_executor(None, free_memory, response_object['id'].encode('utf-8'))
+        response_object = await loop.run_in_executor(None, _call_native, destroy_session, payload)
         return response_object.get("success", False)
 
     @staticmethod
     async def close_all():
         """Destroy all sessions in the Go library."""
         loop = asyncio.get_event_loop()
-        response = await loop.run_in_executor(None, destroy_all)
-        response_bytes = ctypes.string_at(response)
-        response_object = loads(response_bytes.decode('utf-8'))
-        await loop.run_in_executor(None, free_memory, response_object['id'].encode('utf-8'))
+        response_object = await loop.run_in_executor(None, _call_native, destroy_all)
         return response_object.get("success", False)
 
     async def get_cookies(self, url: str) -> list:
         """Get cookies stored in the Go session for a given URL."""
         payload = dumps({"sessionId": self._session_id, "url": url}).encode('utf-8')
         loop = asyncio.get_event_loop()
-        response = await loop.run_in_executor(None, get_cookies_from_session, payload)
-        response_bytes = ctypes.string_at(response)
-        response_object = loads(response_bytes.decode('utf-8'))
-        await loop.run_in_executor(None, free_memory, response_object['id'].encode('utf-8'))
+        response_object = await loop.run_in_executor(None, _call_native, get_cookies_from_session, payload)
         return response_object.get("cookies", [])
 
     async def add_cookies(self, url: str, cookies: list[dict]) -> list:
@@ -182,10 +181,7 @@ class Session:
             "cookies": cookies,
         }).encode('utf-8')
         loop = asyncio.get_event_loop()
-        response = await loop.run_in_executor(None, add_cookies_to_session, payload)
-        response_bytes = ctypes.string_at(response)
-        response_object = loads(response_bytes.decode('utf-8'))
-        await loop.run_in_executor(None, free_memory, response_object['id'].encode('utf-8'))
+        response_object = await loop.run_in_executor(None, _call_native, add_cookies_to_session, payload)
         return response_object.get("cookies", [])
 
     async def execute_request(
@@ -364,12 +360,7 @@ class Session:
                 request_payload["withRandomTLSExtensionOrder"] = self.random_tls_extension_order
 
             loop = asyncio.get_event_loop()
-            response = await loop.run_in_executor(None, request, dumps(request_payload).encode('utf-8'))
-
-            response_bytes = ctypes.string_at(response)
-            response_string = response_bytes.decode('utf-8')
-            response_object = loads(response_string)
-            await loop.run_in_executor(None, free_memory, response_object['id'].encode('utf-8'))
+            response_object = await loop.run_in_executor(None, _call_native, request, dumps(request_payload).encode('utf-8'))
 
             if response_object["status"] == 0:
                 raise TLSClientException(response_object["body"])

@@ -296,6 +296,13 @@ async def main():
 asyncio.run(main())
 ```
 
+Native calls run in the event loop's thread executor. Cancelling an awaiting task
+does not stop an in-flight native request; it finishes or reaches its request
+timeout. Response memory is released inside the same worker, even after
+cancellation, without queuing a second task behind other requests. Applications
+with many concurrent sessions can size their event loop's executor explicitly;
+the library does not change the process-wide executor.
+
 Example 2 -- Custom JA3 fingerprint:
 
 ```python

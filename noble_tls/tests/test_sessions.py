@@ -93,10 +93,12 @@ async def test_session_execute_request(mocker):
     mock_loop = MagicMock()
     mocker.patch('asyncio.get_event_loop', return_value=mock_loop)
 
-    mock_future = asyncio.Future()
-    mock_future.set_result(mock_response)
+    mocker.patch('noble_tls.sessions.request', return_value=mock_response)
 
-    mock_loop.run_in_executor = MagicMock(return_value=mock_future)
+    async def fake_executor(_, func, *args):
+        return func(*args)
+
+    mock_loop.run_in_executor = MagicMock(side_effect=fake_executor)
 
     response = await session.get('http://example.com')
 

@@ -51,7 +51,7 @@ def _get_library():
         _library.request.restype = ctypes.c_char_p
 
         _library.freeMemory.argtypes = [ctypes.c_char_p]
-        _library.freeMemory.restype = ctypes.c_char_p
+        _library.freeMemory.restype = None
 
         _library.getCookiesFromSession.argtypes = [ctypes.c_char_p]
         _library.getCookiesFromSession.restype = ctypes.c_char_p
@@ -73,7 +73,7 @@ def request(payload: bytes) -> ctypes.c_char_p:
     return _get_library().request(payload)
 
 
-def free_memory(response_id: bytes) -> ctypes.c_char_p:
+def free_memory(response_id: bytes) -> None:
     """Free memory associated with a previous response."""
     return _get_library().freeMemory(response_id)
 
